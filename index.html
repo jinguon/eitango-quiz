@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>英単語問題</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eaf0f5;--card:#fff;--ink:#0d1b2a;--sub:#586a7d;--line:#c8d3de;--acc:#ff5a36;--ok:#1b9a5f;--okbg:#dff4e8;--ngbg:#ffe3dc;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b141d;--card:#142230;--ink:#eaf1f8;--sub:#92a5b8;--line:#28394a;--acc:#ff7a5c;--ok:#4fd69a;--okbg:#12382a;--ngbg:#43201a}}
+:root[data-theme="dark"]{--bg:#0b141d;--card:#142230;--ink:#eaf1f8;--sub:#92a5b8;--line:#28394a;--acc:#ff7a5c;--ok:#4fd69a;--okbg:#12382a;--ngbg:#43201a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;line-height:1.6}
+main{max-width:560px;margin:0 auto;padding:22px 16px 40px}
+h1{font-size:2rem;font-weight:900;line-height:1.2;margin:10px 0 8px}
+p{margin:0 0 14px}
+.sub{color:var(--sub)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.go{display:block;width:100%;border:0;border-radius:10px;background:var(--acc);color:#fff;font-weight:900;font-size:1.1rem;padding:14px}
+.rules{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;margin:16px 0}
+.rules li{margin:4px 0}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.q{font-weight:900;font-size:1.05rem}
+.tier{color:var(--sub);font-size:.85rem}
+.lives{font-size:1.5rem;letter-spacing:3px;color:var(--acc)}
+.lives .x{opacity:.22}
+.word{background:var(--card);border:1.5px solid var(--line);border-radius:14px;text-align:center;padding:34px 12px;margin-bottom:14px;font-family:"DM Serif Display",Georgia,serif;font-size:2.6rem;line-height:1.2;overflow-wrap:anywhere}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px;font-weight:700;font-size:1.05rem}
+.opt:hover:not(:disabled){border-color:var(--acc)}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.ng{background:var(--ngbg);border-color:var(--acc)}
+.res{font-size:3.4rem;font-weight:900;line-height:1.1;margin:6px 0}
+.res small{font-size:1.2rem}
+.list{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:6px 16px;margin:16px 0}
+.list div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.list div:last-child{border:0}
+.list b{font-family:"DM Serif Display",Georgia,serif;font-size:1.15rem;font-weight:400}
+.grp{margin:18px 0}.gl{font-size:.85rem;color:var(--sub);margin-bottom:6px;font-weight:700}.chip{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;margin:0 6px 8px 0;font-weight:700}.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}.word.long{font-size:1.6rem}.word.jp{font-family:"Zen Kaku Gothic New","Hiragino Sans",sans-serif;font-weight:900;font-size:2rem}.sec{display:block;width:100%;margin-top:10px;background:none;border:1.5px solid var(--line);border-radius:10px;padding:12px;font-weight:700}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const T=["中学英語","高校英語","実用英語(TOEICなど)","難関大入試英語","上級"];
+const mk=s=>s?s.split(",").map(x=>x.split(":")):[];
+const D=[
+"important:重要な,different:異なる,difficult:難しい,beautiful:美しい,language:言語,library:図書館,example:例,question:質問,answer:答え,practice:練習する,remember:覚えている,forget:忘れる,together:一緒に,information:情報,special:特別な,popular:人気のある,dangerous:危険な,problem:問題,sometimes:ときどき,usually:たいてい,always:いつも,never:決して〜ない,between:〜の間に,through:〜を通って,without:〜なしで,because:なぜなら,weather:天気,environment:環境,culture:文化,tradition:伝統,festival:祭り,museum:博物館,hospital:病院,station:駅,market:市場,invite:招待する,decide:決める,believe:信じる,visit:訪れる,borrow:借りる,lend:貸す,carry:運ぶ,arrive:到着する,receive:受け取る,improve:改善する,enjoy:楽しむ,exercise:運動,health:健康,energy:エネルギー,safe:安全な,empty:空の,quiet:静かな,expensive:高価な,similar:似ている",
+"achieve:達成する,affect:影響を与える,approach:近づく,assume:仮定する,benefit:利益,celebrate:祝う,challenge:挑戦,community:地域社会,compare:比較する,complex:複雑な,consider:よく考える,contain:含む,create:創造する,define:定義する,demand:要求,describe:説明する,develop:発展させる,discover:発見する,economy:経済,effect:効果,emphasize:強調する,encourage:励ます,estimate:見積もる,evidence:証拠,expand:拡大する,express:表現する,figure:数字,focus:焦点を合わせる,generate:生み出す,government:政府,identify:特定する,maintain:維持する,measure:測る,obtain:手に入れる,occur:起こる,opportunity:機会,period:期間,predict:予測する,require:必要とする,resource:資源,responsible:責任がある,reveal:明らかにする,suggest:提案する,support:支える,survive:生き残る,tend:〜しがちである,vary:変わる",
+"acquire:取得する,agenda:議題,allocate:割り当てる,applicant:応募者,appointment:約束,approval:承認,attendance:出席,authorize:許可する,budget:予算,candidate:候補者,colleague:同僚,commute:通勤する,confirm:確認する,contract:契約,deadline:締め切り,deliver:配達する,distribute:配布する,eligible:資格のある,employee:従業員,expense:費用,facility:施設,invoice:請求書,inventory:在庫,manufacture:製造する,negotiate:交渉する,occupy:占める,overtime:残業,postpone:延期する,procedure:手順,promote:昇進させる,purchase:購入する,quarterly:四半期ごとの,receipt:領収書,reimburse:払い戻す,renew:更新する,reserve:予約する,revenue:収益,schedule:予定,shipment:出荷,subscription:定期購読,supervisor:上司,supplier:供給業者,transfer:転勤させる,vacancy:空き,warehouse:倉庫,warranty:保証,refund:返金",
+"abandon:捨てる,ambiguous:あいまいな,arbitrary:恣意的な,autonomy:自律,coherent:筋の通った,compensate:償う,controversy:論争,crucial:きわめて重要な,deteriorate:悪化する,diminish:減らす,discriminate:差別する,eloquent:雄弁な,exaggerate:誇張する,fundamental:根本的な,hypothesis:仮説,implement:実行する,inevitable:避けられない,inherent:固有の,integrate:統合する,legitimate:正当な,mitigate:和らげる,notion:概念,obsolete:時代遅れの,paradox:逆説,prejudice:偏見,prevalent:広く行き渡った,reluctant:気が進まない,resilient:回復力のある,scrutiny:精査,substantial:かなりの,sustain:持ちこたえさせる,tangible:具体的な,thrive:栄える,trivial:ささいな,vulnerable:傷つきやすい,whereas:〜である一方",
+"ubiquitous:至る所にある,ephemeral:はかない,pragmatic:実利的な,ostensible:表向きの,capricious:気まぐれな,candid:率直な,dichotomy:二分,egregious:ひどい,fastidious:気難しい,hackneyed:陳腐な,laconic:簡潔な,magnanimous:寛大な,nefarious:邪悪な,pernicious:有害な,quintessential:典型的な,recalcitrant:反抗的な,sycophant:おべっか使い,taciturn:無口な,venerate:敬う,zealous:熱心な,juxtapose:並べて置く,mundane:ありふれた,perfunctory:おざなりの,prudent:慎重な,tenacious:粘り強い,volatile:不安定な"
+].map(mk);
+const I=[
+"look for:探す,get up:起きる,take care of:世話をする,look forward to:楽しみに待つ,be good at:〜が得意だ,a lot of:たくさんの,at first:最初は,for example:たとえば,in front of:〜の前に,be late for:〜に遅れる,wait for:〜を待つ,hurry up:急ぐ,come back:戻る,pick up:拾い上げる,turn off:消す,put on:着る",
+"give up:あきらめる,put off:延期する,carry out:実行する,take part in:参加する,make sure:確かめる,deal with:対処する,as well as:〜と同様に,in spite of:〜にもかかわらず,result in:〜という結果になる,figure out:理解する,run out of:〜を使い果たす,get along with:〜とうまくやる,keep up with:〜に遅れずについていく,take advantage of:〜を利用する,bring up:育てる,look into:調査する,come up with:思いつく",
+"take over:引き継ぐ,hand in:提出する,set up:設立する,fill out:記入する,call off:中止する,sign up for:〜に申し込む,in charge of:〜を担当して,be about to:まさに〜しようとしている,on schedule:予定どおりに,out of stock:在庫切れで,in advance:前もって,on a regular basis:定期的に,follow up on:〜の後続対応をする,get in touch with:〜と連絡を取る,look over:ざっと目を通す",
+"bring about:引き起こす,come across:偶然出会う,get over:克服する,make up for:埋め合わせる,put up with:我慢する,rule out:除外する,stand for:表す,turn down:断る,call for:要求する,do away with:廃止する,live up to:〜に応える,look down on:見下す,pass away:亡くなる,set aside:取っておく,wear out:すり減らす,fall short of:〜に及ばない,in the long run:長い目で見れば,by no means:決して〜でない",
+"at the expense of:〜を犠牲にして,by virtue of:〜のおかげで,in lieu of:〜の代わりに,with a view to:〜を目的として,for the sake of:〜のために,not to mention:〜は言うまでもなく,in the wake of:〜の後に続いて,on the verge of:まさに〜の寸前で,at odds with:〜と対立して,in the absence of:〜がないときに"
+].map(mk);
+const P=[
+"Time is money:時は金なり,Practice makes perfect:習うより慣れよ,Seeing is believing:百聞は一見にしかず,Easy come easy go:悪銭身につかず,Haste makes waste:急がば回れ,The early bird catches the worm:早起きは三文の徳,No pain no gain:苦労なくして得るものなし",
+"Look before you leap:石橋をたたいて渡る,Out of sight out of mind:去る者は日々に疎し,Birds of a feather flock together:類は友を呼ぶ,Rome was not built in a day:ローマは一日にして成らず,Two heads are better than one:三人寄れば文殊の知恵,Failure is the mother of success:失敗は成功のもと,Honesty is the best policy:正直は最善の策,Don’t judge a book by its cover:人は見かけによらぬもの",
+"Strike while the iron is hot:鉄は熱いうちに打て,A rolling stone gathers no moss:転石苔を生ぜず,Kill two birds with one stone:一石二鳥,When in Rome do as the Romans do:郷に入っては郷に従え,Actions speak louder than words:行動は言葉よりも雄弁である,A stitch in time saves nine:今日の一針、明日の十針,A friend in need is a friend indeed:まさかのときの友こそ真の友,Every cloud has a silver lining:苦あれば楽あり",
+"Don’t count your chickens before they hatch:捕らぬ狸の皮算用,Even Homer sometimes nods:弘法にも筆の誤り,Necessity is the mother of invention:必要は発明の母,Where there’s smoke there’s fire:火のない所に煙は立たぬ,Blood is thicker than water:血は水よりも濃い,Too many cooks spoil the broth:船頭多くして船山に登る,It’s no use crying over spilt milk:覆水盆に返らず,Fortune favors the bold:運命は勇者に微笑む,The pen is mightier than the sword:ペンは剣よりも強し,Curiosity killed the cat:好奇心は猫をも殺す",
+""
+].map(mk);
+const addTo=(d,ex)=>ex.forEach((s,i)=>{if(s)d[i].push(...mk(s))});
+addTo(D,[
+"airport:空港,bridge:橋,building:建物,church:教会,farm:農場,forest:森,island:島,lake:湖,mountain:山,river:川,street:通り,village:村,kitchen:台所,garden:庭,window:窓,ticket:切符,letter:手紙,message:伝言,picture:絵,story:物語,subject:科目,history:歴史,science:科学,report:報告書,lesson:授業,homework:宿題,season:季節,holiday:休日,agree:賛成する,allow:許す,choose:選ぶ,climb:登る,collect:集める,cross:横切る,discuss:話し合う,explain:説明する,follow:ついていく,grow:成長する,happen:起こる,join:参加する,keep:保つ,leave:去る,lose:失う,miss:恋しく思う,protect:守る,push:押す,pull:引く,reach:届く,return:戻る,save:救う,send:送る,share:共有する,shout:叫ぶ,stay:とどまる,surprise:驚かせる,touch:触れる,travel:旅行する,afraid:恐れて,angry:怒った,bright:明るい,clever:賢い,dark:暗い,dirty:汚い,famous:有名な,foreign:外国の,glad:うれしい,heavy:重い,hungry:空腹の,kind:親切な,lazy:怠惰な,local:地元の,loud:大声の,narrow:狭い,polite:礼儀正しい,proud:誇りに思う,serious:真剣な,strange:奇妙な,sudden:突然の,thirsty:のどが渇いた,tired:疲れた,wonderful:すばらしい",
+"accept:受け入れる,accurate:正確な,adapt:適応する,adjust:調整する,admit:認める,advantage:利点,aim:目指す,analyze:分析する,annual:毎年の,appreciate:感謝する,appropriate:適切な,aspect:側面,attitude:態度,attract:引きつける,available:利用できる,basic:基本的な,behave:ふるまう,cause:引き起こす,century:世紀,concern:懸念,conflict:対立,connect:つなぐ,consequence:結果,constant:絶え間ない,consume:消費する,context:文脈,contrast:対照,contribute:貢献する,convince:納得させる,debate:討論,decline:衰える,despite:〜にもかかわらず,detect:見つける,determine:決定する,distinguish:区別する,domestic:国内の,enable:可能にする,ensure:確実にする,essential:不可欠な,establish:設立する,evaluate:評価する,evolve:進化する,exceed:超える,exist:存在する,extend:延長する,factor:要因,gradual:徐々の,guarantee:保証する,impact:衝撃,imply:ほのめかす,impose:課す,indicate:示す,individual:個人の,initial:最初の,institution:機関,intend:意図する,interpret:解釈する",
+"accountant:会計士,advertisement:広告,airline:航空会社,architect:建築家,assembly:組み立て,banquet:宴会,brochure:パンフレット,catalog:カタログ,cashier:レジ係,client:顧客,committee:委員会,competitor:競合他社,complaint:苦情,conference:会議,consumer:消費者,corporation:会社,courier:配達員,customs:税関,defective:欠陥のある,delay:遅れ,department:部門,destination:目的地,director:取締役,discount:割引,dividend:配当,donation:寄付,durable:耐久性のある,efficiency:効率,enroll:登録する,equipment:設備,exhibit:展示する,fee:料金,fiscal:会計の,forecast:見通し,fund:資金,headquarters:本社,incentive:報奨,itinerary:旅程,launch:発売する,lease:賃貸契約,merchandise:商品,merger:合併,notify:通知する,patent:特許,personnel:人事,premises:敷地,profit:利益,proposal:提案,prospective:見込みのある,recruit:採用する,resign:辞職する,retail:小売り,salary:給料,sample:見本,tenant:賃借人,tuition:授業料,venue:会場,vendor:販売業者,wholesale:卸売り",
+"abstract:抽象的な,accumulate:蓄積する,acknowledge:認める,adverse:不利な,advocate:擁護する,alter:変える,anticipate:予期する,apparent:明白な,articulate:はっきり述べる,assert:主張する,burden:重荷,circulate:循環する,comply:従う,comprehensive:包括的な,concede:譲歩する,condemn:非難する,consensus:合意,constrain:制約する,contemporary:現代の,contradict:矛盾する,convey:伝える,correspond:一致する,criterion:基準,deprive:奪う,derive:引き出す,deviate:逸脱する,discrepancy:食い違い,disrupt:混乱させる,diverse:多様な,dubious:疑わしい,elaborate:念入りな,eliminate:排除する,emerge:現れ出る,enhance:高める,enforce:施行する,entail:伴う,equivalent:同等の,erode:侵食する,evoke:呼び起こす,explicit:明示的な,facilitate:促進する,feasible:実行可能な,fluctuate:変動する,hierarchy:階層,hinder:妨げる,illustrate:例証する,impair:損なう,induce:誘発する,infer:推測する,inhibit:抑制する,innovation:革新,irrelevant:無関係な,justify:正当化する,mandatory:義務的な,manipulate:操る,negligible:無視できる程度の,norm:規範,omit:省略する",
+"acrimonious:辛辣な,aloof:よそよそしい,ambivalent:相反する感情を持つ,ardent:熱烈な,auspicious:縁起のよい,belligerent:好戦的な,benevolent:慈悲深い,bolster:強化する,cacophony:不協和音,clandestine:秘密の,cogent:説得力のある,conspicuous:目立つ,copious:豊富な,cursory:ざっとした,decorum:礼儀,demure:控えめな,deride:あざ笑う,diligent:勤勉な,discern:見分ける,disparage:けなす,eccentric:風変わりな,elusive:とらえにくい,enigmatic:謎めいた,equanimity:平静,exacerbate:悪化させる,exemplary:模範的な,frugal:倹約な,gregarious:社交的な,haughty:傲慢な,impartial:公平な,impetuous:衝動的な,inadvertent:不注意の,indolent:無気力な,innocuous:無害な,irascible:怒りっぽい,lucid:明快な,meticulous:細心の,obstinate:頑固な,ominous:不吉な,opulent:豪華な,ostentatious:見せびらかしの,prolific:多作な,stoic:禁欲的な,trepidation:不安,unanimous:全員一致の,vindicate:正当性を証明する,wistful:物思いに沈んだ"]);
+addTo(I,[
+"listen to:聞く,look like:〜に似ている,go out:外出する,sit down:座る,stand up:立ち上がる,get on:乗る,get off:降りる,put away:片づける,take off:脱ぐ,come from:〜の出身である,next to:〜の隣に,far from:〜から遠い,such as:〜のような,used to:以前は〜だった,be interested in:〜に興味がある,be famous for:〜で有名だ,be afraid of:〜を恐れる,be full of:〜でいっぱいだ,be ready for:〜の準備ができている,get to:〜に着く,every time:〜するたびに,right away:すぐに",
+"depend on:〜に頼る,belong to:〜に属する,consist of:〜から成る,apply for:〜に応募する,agree with:〜に賛成する,pay attention to:〜に注意を払う,be used to:〜に慣れている,take place:行われる,in addition to:〜に加えて,according to:〜によれば,because of:〜のせいで,as a result:その結果,on the other hand:一方で,in fact:実際は,in order to:〜するために,at least:少なくとも,sooner or later:遅かれ早かれ,no longer:もはや〜ない,after all:結局,as for:〜に関しては,break out:勃発する,break down:故障する,turn into:〜に変わる,show up:現れる,point out:指摘する",
+"in terms of:〜の点で,in particular:特に,in general:一般に,so far:今までのところ,up to date:最新の,out of date:時代遅れの,in the meantime:その間に,in case of:〜の場合には,on time:時間どおりに,in time:間に合って,keep track of:把握し続ける,be responsible for:〜に責任がある,be aware of:〜に気づいている,be capable of:〜の能力がある,be subject to:〜の対象となる,refer to:〜に言及する,get rid of:〜を取り除く,put forward:提案する,come into effect:発効する,carry on:続ける,go over:見直す,pass on:伝える,free of charge:無料で,out of order:故障中で,on sale:販売中で,in short:要するに,in other words:言い換えれば",
+"account for:〜を説明する,adhere to:〜に従う,allow for:〜を考慮に入れる,attribute to:〜のせいにする,back down:引き下がる,boil down to:結局〜になる,break through:突破する,carry over:持ち越す,catch up with:〜に追いつく,come down with:〜にかかる,come to terms with:〜を受け入れる,cut back on:削減する,dispose of:処分する,dwell on:くよくよ考える,fall back on:〜をあてにする,give in:屈する,hold back:抑える,make do with:〜で間に合わせる,pull off:やってのける,resort to:〜に訴える,see through:見抜く,settle for:〜で妥協する,shake off:振り払う,step down:退任する,stand out:目立つ,take on:引き受ける,turn out:〜と判明する,wipe out:一掃する,get across:伝える,hold on to:〜にしがみつく",
+"all but:ほとんど,as to:〜に関して,but for:〜がなければ,by and large:概して,for good:永遠に,in view of:〜を考慮して,in accordance with:〜に従って,on account of:〜の理由で,regardless of:〜にかかわらず,to the extent that:〜の範囲で,as opposed to:〜とは対照的に,in the face of:〜に直面して,in the light of:〜に照らして,in pursuit of:〜を追求して,in conjunction with:〜と協力して,in exchange for:〜と引き換えに,in favor of:〜に賛成して,at the mercy of:〜のなすがままに,at stake:危うくなって,under the guise of:〜を装って,by way of:〜経由で,to the detriment of:〜を損なって"]);
+addTo(P,[
+"Knowledge is power:知識は力なり,Health is better than wealth:健康は富に勝る,Laughter is the best medicine:笑いは最良の薬,Money talks:金がものを言う,Speak of the devil:噂をすれば影,Love is blind:恋は盲目,Ignorance is bliss:知らぬが仏,Better safe than sorry:転ばぬ先の杖,There is no place like home:我が家に勝る所なし,Slow and steady wins the race:着実な者が最後に勝つ,Like father like son:この親にしてこの子あり,Pride comes before a fall:おごる者久しからず,Home is where the heart is:心のある所が我が家,Where there is a will there is a way:意志あるところに道は開ける",
+"All that glitters is not gold:光るものすべてが金ならず,Beauty is only skin deep:美しさは皮一枚,Variety is the spice of life:変化は人生の薬味,The grass is always greener on the other side:隣の芝生は青い,A bird in the hand is worth two in the bush:明日の百より今日の五十,Don’t put all your eggs in one basket:卵を一つのかごに盛るな,First come first served:先着順,Many hands make light work:人手が多ければ仕事は楽,The apple doesn’t fall far from the tree:蛙の子は蛙,Misery loves company:不幸は道連れを好む,No news is good news:便りのないのは良い便り,Old habits die hard:三つ子の魂百まで,Prevention is better than cure:予防は治療に勝る,Silence is golden:沈黙は金,Time heals all wounds:時が傷をいやす,Truth is stranger than fiction:事実は小説よりも奇なり",
+"Absence makes the heart grow fonder:会えない時間が愛を育てる,Barking dogs seldom bite:吠える犬はめったにかまない,Beauty lies in the eye of the beholder:美は見る人の目の中にある,Charity begins at home:慈善はまず家庭から,Don’t bite the hand that feeds you:恩を仇で返すな,Don’t look a gift horse in the mouth:もらい物にけちをつけるな,Familiarity breeds contempt:慣れ親しむと軽蔑が生まれる,God helps those who help themselves:天は自ら助くる者を助く,He who laughs last laughs longest:最後に笑う者が最もよく笑う,It takes two to tango:タンゴは一人では踊れない,Laugh and the world laughs with you:笑う門には福来たる,Let sleeping dogs lie:寝た子を起こすな,Make hay while the sun shines:好機を逃すな,Hindsight is twenty-twenty:後知恵は完璧に見える,Fools rush in where angels fear to tread:愚か者は天使も恐れる所に突進する",
+"A chain is only as strong as its weakest link:鎖の強さは最も弱い輪で決まる,A watched pot never boils:見つめる鍋は煮えない,All’s well that ends well:終わりよければすべてよし,An eye for an eye:目には目を,Beggars can’t be choosers:乞食に選り好みはできない,Cut your coat according to your cloth:身の丈に合わせよ,Don’t cross the bridge until you come to it:取り越し苦労をするな,Empty vessels make the most noise:空の器ほど音が大きい,Great oaks from little acorns grow:大木も小さなどんぐりから,Half a loaf is better than none:半分でもないよりまし,He who hesitates is lost:ためらう者は機会を失う,Jack of all trades master of none:器用貧乏,Lightning never strikes twice:災難は同じ所に二度は来ない,Out of the frying pan into the fire:一難去ってまた一難,The proof of the pudding is in the eating:論より証拠,Still waters run deep:静かな川は深い",
+"Cast pearls before swine:豚に真珠,Penny wise pound foolish:安物買いの銭失い,To err is human to forgive divine:過つは人の常許すは神の業,The road to hell is paved with good intentions:地獄への道は善意で舗装されている,A fool and his money are soon parted:愚か者は金をすぐに失う,The devil is in the details:悪魔は細部に宿る"]);
+const CATS={w:{n:"単語",d:D},i:{n:"熟語",d:I},p:{n:"ことわざ",d:P}};
+const DIRS=[["ej","英語→日本語"],["je","日本語→英語"]];
+const CATN=[["w","単語"],["i","熟語"],["p","ことわざ"],["a","すべて"]];
+const SEL={dir:"ej",cat:"w"};
+const app=document.getElementById("app");
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let n,lives,used,wrong,cur,lock;
+const bk=()=>"vq_"+SEL.dir+SEL.cat;
+function getBest(){try{return +localStorage.getItem(bk())||0}catch(e){return 0}}
+function tierOf(q){return q<=5?0:q<=10?1:q<=15?2:q<=25?3:4}
+function pickIn(q,c){
+const t=tierOf(q),d=CATS[c].d;
+for(const k of [t,t+1,t+2,t+3,t+4,t-1,t-2,t-3,t-4]){
+if(k<0||k>4)continue;
+const pool=d[k].filter(w=>!used.has(c+w[0]));
+if(pool.length)return {c:c,w:rnd(pool),k:k};
+}
+return null;
+}
+function pick(q){
+for(const c of (SEL.cat==="a"?shuf(["w","i","p"]):[SEL.cat])){const r=pickIn(q,c);if(r)return r}
+return null;
+}
+function home(){
+const chips=(arr,key)=>arr.map(x=>'<button class="chip'+(SEL[key]===x[0]?' on':'')+'" data-k="'+key+'" data-v="'+x[0]+'">'+x[1]+'</button>').join('');
+const b=getBest();
+app.innerHTML='<h1>英単語問題</h1><div class="grp"><div class="gl">出題</div>'+chips(DIRS,"dir")+'</div><div class="grp"><div class="gl">内容</div>'+chips(CATN,"cat")+'</div><p class="sub">'+(b?'この設定の自己ベスト: '+b+'問目':'4択 / ライフ3つ / 問題数は無制限')+'</p><button class="go" id="st">スタート</button>';
+app.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{SEL[c.dataset.k]=c.dataset.v;home()});
+document.getElementById("st").onclick=start;
+}
+function start(){n=1;lives=3;used=new Set();wrong=[];ask()}
+function ask(){
+cur=pick(n);
+if(!cur)return end(true);
+used.add(cur.c+cur.w[0]);lock=false;
+const a=SEL.dir==="ej"?1:0,p=1-a,all=CATS[cur.c].d;
+const same=shuf(all[cur.k].filter(x=>x[a]!==cur.w[a])),rest=shuf(all.flat().filter(x=>x[a]!==cur.w[a]&&!all[cur.k].includes(x))),ds=[];
+for(const x of [...same,...rest]){if(ds.length<3&&!ds.includes(x[a]))ds.push(x[a])}
+cur.a=a;cur.o=shuf([cur.w[a],...ds]);
+const q=cur.w[p],cls=(p===0&&q.length>16?" long":"")+(p===1?" jp":"");
+app.innerHTML='<div class="top"><div class="q">第'+n+'問</div><div class="lives" aria-label="残りライフ '+lives+'">'+[0,1,2].map(i=>'<span class="'+(i<lives?'':'x')+'">♥</span>').join('')+'</div></div><div class="word'+cls+'">'+q+'</div>'+cur.o.map((o,i)=>'<button class="opt" data-i="'+i+'">'+o+'</button>').join('');
+app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(+b.dataset.i));
+}
+function answer(i){
+if(lock)return;lock=true;
+const bs=app.querySelectorAll(".opt"),ok=cur.o[i]===cur.w[cur.a];
+bs.forEach((b,j)=>{b.disabled=true;if(cur.o[j]===cur.w[cur.a])b.classList.add("ok")});
+if(!ok){bs[i].classList.add("ng");lives--;wrong.push(cur.w)}
+setTimeout(()=>{if(lives<=0)end(false);else{n++;ask()}},ok?650:1500);
+}
+function end(clear){
+const reached=clear?n-1:n;let best=getBest();
+if(reached>best){best=reached;try{localStorage.setItem(bk(),best)}catch(e){}}
+app.innerHTML='<p class="sub" style="margin-top:10px">'+(clear?'全問クリア!':'ゲームオーバー')+'</p><div class="res">'+reached+'<small>問目まで到達</small></div><p class="sub">この設定の自己ベスト: '+best+'問目</p>'+(wrong.length?'<h2 style="font-size:1.1rem;margin:20px 0 0">間違えた問題</h2><div class="list">'+wrong.map(w=>'<div><b>'+w[0]+'</b><span>'+w[1]+'</span></div>').join('')+'</div>':'')+'<button class="go" id="rt">もう一度</button><button class="sec" id="hm">設定を変える</button>';
+document.getElementById("rt").onclick=start;
+document.getElementById("hm").onclick=home;
+window.scrollTo(0,0);
+}
+home();
+</script>
+</body>
+</html>
